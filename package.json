@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit",
+    "typegen": "next typegen",
+    "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "db:setup": "node --env-file=.env.local scripts/setup-db.mjs",
     "check:gemini": "node --env-file=.env.local scripts/check-gemini.mjs"
