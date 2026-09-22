@@ -6,7 +6,7 @@ Built with Next.js (App Router), the Vercel AI SDK, Gemini and Postgres + pgvect
 
 <!-- Add a screenshot or GIF here: docs/demo.gif -->
 
-**Live demo:** _add your Vercel URL_
+**Live demo:** [v0-docuchat-demo.vercel.app](https://v0-docuchat-demo.vercel.app)
 
 ## How it works
 
