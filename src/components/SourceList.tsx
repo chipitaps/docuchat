@@ -9,7 +9,6 @@ type Props = {
   messageId: string;
   sources: CitedSource[];
   highlights: Highlights;
-  /** Source briefly emphasised after the user clicks its citation. */
   flash: number | null;
 };
 

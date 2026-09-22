@@ -13,14 +13,11 @@ const SUGGESTIONS = [
   "What is not covered here?",
 ];
 
-/** The server returns `{ error }` JSON; useChat hands it to us as a string. */
 function readableError(error: Error): string {
   try {
     const parsed = JSON.parse(error.message);
     if (typeof parsed?.error === "string") return parsed.error;
-  } catch {
-    // not JSON — fall through
-  }
+  } catch {}
   return error.message || "Something went wrong.";
 }
 
@@ -30,7 +27,7 @@ export function Chat({ hasDocuments }: { hasDocuments: boolean }) {
   const [input, setInput] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const waiting = status === "submitted"; // request sent, nothing back yet
+  const waiting = status === "submitted";
   const streaming = status === "streaming";
   const busy = waiting || streaming;
   const lastId = messages.at(-1)?.id;

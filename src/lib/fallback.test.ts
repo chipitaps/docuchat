@@ -72,7 +72,6 @@ describe("firstThatStreams", () => {
   });
 
   it("keeps an attempt that fails AFTER it started streaming text", async () => {
-    // The user already saw words, so switching models would duplicate the answer.
     const parts: Part[] = [
       { type: "text-delta", text: "Par" },
       { type: "error", error: "connection lost" },

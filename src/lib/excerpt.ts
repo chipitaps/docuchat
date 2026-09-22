@@ -4,7 +4,6 @@ export type Segment = { text: string; marked: boolean };
 
 export type Excerpt = {
   segments: Segment[];
-  /** Text was cut off before / after the shown window. */
   leading: boolean;
   trailing: boolean;
 };
@@ -12,14 +11,11 @@ export type Excerpt = {
 const isSpace = (char: string) => /\s/.test(char);
 const HEADING_LINE = /^\s*#{1,6}\s/;
 
-/** Drops Markdown heading lines: structure, not evidence, so they only add noise. */
 export const stripHeadings = (text: string) => text.replace(/^[ \t]*#{1,6}\s.*$/gm, "");
 
-/** True if `text` contains anything besides blank lines and Markdown headings. */
 const hasProse = (text: string) =>
   text.split("\n").some((line) => line.trim() !== "" && !HEADING_LINE.test(line));
 
-// A window edge that lands on a heading or blank line is noise: step past it.
 function trimHeadings(content: string, start: number, end: number) {
   for (;;) {
     const newline = content.indexOf("\n", start);
@@ -39,7 +35,6 @@ function trimHeadings(content: string, start: number, end: number) {
   return { start, end };
 }
 
-// Move a cut point to a word boundary without crossing `limit`.
 function snapForward(text: string, pos: number, limit: number) {
   while (pos > 0 && pos < limit && !isSpace(text[pos - 1])) pos++;
   return pos;
@@ -49,10 +44,6 @@ function snapBackward(text: string, pos: number, limit: number) {
   return pos;
 }
 
-/**
- * The part of `content` to show for a source: the highlighted ranges plus a
- * little context on each side, or the whole passage when `full` is set.
- */
 export function buildExcerpt(
   content: string,
   ranges: Range[],
@@ -67,11 +58,9 @@ export function buildExcerpt(
     const last = sorted.length ? sorted[sorted.length - 1][1] : Math.min(content.length, radius * 2);
     start = snapForward(content, Math.max(0, first - radius), first);
     end = snapBackward(content, Math.min(content.length, last + radius), last);
-    // Not worth an ellipsis for a handful of characters.
     if (start < 40) start = 0;
     if (content.length - end < 40) end = content.length;
 
-    // Never trim into the highlighted text itself.
     const trimmed = trimHeadings(content, start, end);
     start = sorted.length ? Math.min(trimmed.start, first) : trimmed.start;
     end = sorted.length ? Math.max(trimmed.end, last) : trimmed.end;
@@ -91,7 +80,6 @@ export function buildExcerpt(
 
   return {
     segments,
-    // An ellipsis only makes sense if real text (not just a heading) was cut.
     leading: hasProse(content.slice(0, start)),
     trailing: hasProse(content.slice(end)),
   };

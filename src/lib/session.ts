@@ -4,10 +4,6 @@ import { cookies } from "next/headers";
 const COOKIE = "docuchat_sid";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
-/**
- * Anonymous per-browser session. Every document and chunk is scoped to it,
- * so visitors of the public demo never see each other's files.
- */
 export async function getSessionId(): Promise<string> {
   const store = await cookies();
   const existing = store.get(COOKIE)?.value;

@@ -2,7 +2,6 @@ import { APICallError, RetryError } from "ai";
 import { describe, expect, it, vi } from "vitest";
 import { errorResponse, friendlyMessage, HttpError } from "./http";
 
-/** What the AI SDK throws once its automatic retries are used up. */
 function retried(statusCode: number) {
   const cause = new APICallError({
     message: "provider failure",

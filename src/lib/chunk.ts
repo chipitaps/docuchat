@@ -1,6 +1,5 @@
 const BREAKS = ["\n\n", "\n", ". ", " "];
 
-/** Position just after the best natural break in `window` at or past `min`. */
 function findBreak(window: string, min: number): number {
   for (const sep of BREAKS) {
     const i = window.lastIndexOf(sep);
@@ -9,10 +8,6 @@ function findBreak(window: string, min: number): number {
   return window.length;
 }
 
-/**
- * Splits text into overlapping chunks, preferring paragraph, then line,
- * then sentence, then word boundaries so chunks stay readable.
- */
 export function chunkText(text: string, size = 1000, overlap = 150): string[] {
   if (overlap >= size) throw new Error("overlap must be smaller than size");
 

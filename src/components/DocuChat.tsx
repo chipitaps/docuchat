@@ -70,8 +70,6 @@ export function DocuChat() {
     setDocuments((docs) => docs.filter((d) => d.id !== id));
   }, []);
 
-  // On phones the library is collapsed to give the chat the screen, except
-  // when it is empty: then adding a document is the only useful thing to do.
   const showPanel = panelOpen || (!loading && documents.length === 0);
 
   return (

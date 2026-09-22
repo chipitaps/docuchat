@@ -1,5 +1,3 @@
-// Creates the pgvector extension and tables. Safe to run more than once.
-//   npm run db:setup
 import { neon } from "@neondatabase/serverless";
 
 const url = process.env.DATABASE_URL;
@@ -9,7 +7,7 @@ if (!url) {
 }
 
 const sql = neon(url);
-const DIMENSIONS = 768; // keep in sync with EMBEDDING_DIMENSIONS in src/lib/config.ts
+const DIMENSIONS = 768;
 
 const statements = [
   `create extension if not exists vector`,

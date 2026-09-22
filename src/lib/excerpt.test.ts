@@ -76,7 +76,6 @@ describe("buildExcerpt", () => {
     const { segments, leading, trailing } = buildExcerpt(content, [[start, start + target.length]]);
 
     expect(segments.map((s) => s.text).join("")).not.toContain("#");
-    // Only headings were cut, so no ellipsis is needed.
     expect(leading).toBe(false);
     expect(trailing).toBe(false);
   });

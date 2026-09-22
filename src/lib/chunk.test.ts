@@ -35,7 +35,7 @@ describe("chunkText", () => {
   });
 
   it("covers the whole input and always terminates", () => {
-    const text = "x".repeat(5000); // no break characters at all
+    const text = "x".repeat(5000);
     const chunks = chunkText(text, 400, 100);
     expect(chunks.join("").length).toBeGreaterThanOrEqual(text.length);
   });
