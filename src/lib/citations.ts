@@ -1,18 +1,11 @@
 import type { Source } from "./retrieval";
 
 export type CitedSource = Source & {
-  /** Number shown to the user: 1, 2, 3… in order of first appearance. */
   label: number;
 };
 
 const CITATION = /\[(\d+)\]/g;
 
-/**
- * Turns the model's `[3]` markers into numbered Markdown links (`[1](#cite-1)`)
- * and lists the sources it actually cited. Numbers are reassigned in reading
- * order, so an answer citing excerpts 2 and 3 shows 1 and 2. Markers that
- * don't match a retrieved excerpt are left untouched.
- */
 export function prepareCitations(
   text: string,
   sources: Source[],

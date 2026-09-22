@@ -1,15 +1,8 @@
-/** Half-open character range [start, end) into a string. */
 export type Range = [start: number, end: number];
 
-// A sentence ends after . ! ? … followed by whitespace, or at a line break.
 const BOUNDARY = /(?<=[.!?…])\s+|\n+/g;
 const HEADING = /^#{1,6}\s/;
 
-/**
- * Sentence spans of `text` as character ranges. Fragments shorter than
- * `minLength` (abbreviations, list stubs) are joined to the sentence that
- * follows; Markdown headings are dropped since they never answer anything.
- */
 export function splitSentences(text: string, minLength = 24): Range[] {
   const fragments: Range[] = [];
   const addFragment = (from: number, to: number) => {
@@ -26,7 +19,7 @@ export function splitSentences(text: string, minLength = 24): Range[] {
   addFragment(start, text.length);
 
   const spans: Range[] = [];
-  let carry: number | null = null; // start of a short fragment waiting for the next one
+  let carry: number | null = null;
   let lastEnd = 0;
   for (const [s, e] of fragments) {
     if (HEADING.test(text.slice(s, e))) continue;
@@ -59,18 +52,11 @@ export function cosine(a: number[], b: number[]): number {
 }
 
 type PickOptions = {
-  /**
-   * Below this best score nothing is highlighted: no sentence is a clear match.
-   * Calibrated on gemini-embedding-001 (768 dims): unrelated questions peak
-   * around 0.55, relevant ones land between 0.63 and 0.81.
-   */
   minScore?: number;
-  /** A runner-up is also highlighted when within this distance of the best. */
   margin?: number;
   max?: number;
 };
 
-/** The sentence(s) that best match the query, in document order. */
 export function pickHighlights(
   spans: Range[],
   scores: number[],

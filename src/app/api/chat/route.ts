@@ -44,7 +44,6 @@ export async function POST(req: Request) {
       throw new HttpError(400, "Send a non-empty 'messages' array.");
     }
 
-    // Keep only text parts (drops our own `data-sources` parts) and cap history.
     const history: ChatMessage[] = messages
       .slice(-LIMITS.historyMessages)
       .map((m) => ({
@@ -60,7 +59,6 @@ export async function POST(req: Request) {
       throw new HttpError(413, `Questions are limited to ${LIMITS.maxQuestionChars} characters.`);
     }
 
-    // Embed the last two user turns so follow-ups like "and the second one?" still retrieve well.
     const query = history
       .filter((m) => m.role === "user")
       .slice(-2)
@@ -73,16 +71,10 @@ export async function POST(req: Request) {
 
     const stream = createUIMessageStream<ChatMessage>({
       execute: async ({ writer }) => {
-        // Sources go out first so citations resolve while the answer streams.
         writer.write({ type: "data-sources", data: sources });
 
-        // Highlighting runs alongside generation instead of delaying it.
         const highlights = highlightSources(queryVector, sources);
 
-        // Primary model first; if it is out of quota, overloaded or too slow
-        // before saying anything, the fallback answers instead. Free-tier
-        // limits make the SDK wait out a Retry-After of up to a minute, so
-        // every model but the last fails fast rather than showing a silent spinner.
         const models = [...new Set([CHAT_MODEL, FALLBACK_CHAT_MODEL])];
         const answer = await firstThatStreams(
           models.map(
@@ -99,8 +91,6 @@ export async function POST(req: Request) {
             console.warn(`${models[i]} unavailable, falling back to ${models[i + 1]}:`, errorSummary(error)),
         );
 
-        // The error mapper must be passed here too: errors raised by the model
-        // travel through this inner stream, not the outer one.
         writer.merge(toUIMessageStream({ stream: answer, onError: friendlyMessage }));
 
         writer.write({ type: "data-highlights", data: await highlights });

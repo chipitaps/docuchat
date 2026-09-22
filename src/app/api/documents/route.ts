@@ -49,7 +49,6 @@ export async function POST(req: Request) {
 
     const db = sql();
 
-    // Housekeeping so the public demo doesn't fill the free database.
     await db.query(
       `delete from documents where created_at < now() - make_interval(hours => $1)`,
       [LIMITS.retentionHours],
@@ -73,7 +72,6 @@ export async function POST(req: Request) {
 
     const embeddings = await embedDocuments(chunks);
 
-    // One statement = atomic: a failed insert never leaves an empty document.
     const [row] = (await db.query(
       `with d as (
          insert into documents (session_id, name, chunk_count)

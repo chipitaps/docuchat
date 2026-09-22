@@ -1,8 +1,3 @@
-// Verifies your Gemini key and every model the app uses before you run it.
-//   npm run check:gemini
-//
-// The primary chat model can be out of quota without being a problem, as long
-// as the fallback works (free-tier daily limits are small and differ per model).
 import { createGoogle } from "@ai-sdk/google";
 import { embed, generateText } from "ai";
 

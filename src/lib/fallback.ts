@@ -1,14 +1,5 @@
 type Part = { type: string };
 
-/**
- * Starts the attempts in order and returns the first stream that gets as far
- * as producing text. An attempt is abandoned when it errors or aborts before
- * emitting any text (quota, overload, timeout), and the next one takes over.
- * The last attempt is returned as-is, so its error still reaches the client.
- *
- * Nothing has been sent to the user when we switch, so the fallback is
- * invisible apart from a slightly later first word.
- */
 export async function firstThatStreams<T extends Part>(
   attempts: Array<() => ReadableStream<T>>,
   onFallback?: (error: unknown, attemptIndex: number) => void,
@@ -19,7 +10,6 @@ export async function firstThatStreams<T extends Part>(
     let failure: { error: unknown } | undefined;
     let ended = false;
 
-    // Read until the stream shows whether it works: first text, or a failure.
     for (;;) {
       const { done, value } = await reader.read();
       if (done) {

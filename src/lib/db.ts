@@ -3,7 +3,6 @@ import { ConfigError } from "./http";
 
 let client: ReturnType<typeof neon> | undefined;
 
-/** Lazily created so `next build` works without DATABASE_URL. */
 export function sql() {
   if (!client) {
     const url = process.env.DATABASE_URL;
@@ -13,5 +12,4 @@ export function sql() {
   return client;
 }
 
-/** pgvector accepts its text form: '[0.1,0.2,...]'. */
 export const toVector = (values: number[]) => `[${values.join(",")}]`;

@@ -20,7 +20,6 @@ export function Pending({ label }: { label: string }) {
   );
 }
 
-/** The agent's turn: one bubble holding the answer and, under it, its sources. */
 export function AssistantMessage({
   message,
   streaming,
@@ -49,7 +48,6 @@ export function AssistantMessage({
     timer.current = setTimeout(() => setFlash(null), 1400);
   }
 
-  // The turn failed before any text arrived (the error bubble explains why).
   if (!text && !streaming) return null;
 
   return (
@@ -57,8 +55,6 @@ export function AssistantMessage({
       {text ? (
         <div className="prose-chat">
           <Markdown
-            // Model output is untrusted (documents can carry injected text):
-            // no images that could leak data via URLs, and no outbound links.
             disallowedElements={["img"]}
             components={{
               a: ({ href, children }): ReactNode =>
