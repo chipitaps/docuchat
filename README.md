@@ -92,3 +92,7 @@ Free quotas are small, differ per model and change often. For example, `gemini-3
 - [ ] OCR for scanned PDFs
 - [ ] Persist chat history per session
 - [ ] Open the original PDF at the cited page
+
+## License
+
+[MIT](LICENSE)
