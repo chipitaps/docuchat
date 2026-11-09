@@ -40,8 +40,9 @@ flowchart LR
 |---|---|
 | Framework | Next.js 16 (App Router, route handlers), React 19, TypeScript |
 | AI | Vercel AI SDK v7, `@ai-sdk/google` — `gemini-3.1-flash-lite` (fallback `gemini-3.5-flash-lite`) + `gemini-embedding-001` |
-| Database | Postgres + [pgvector](https://github.com/pgvector/pgvector) on Neon (`@neondatabase/serverless`) |
+| Database | Postgres + [pgvector](https://github.com/pgvector/pgvector) — Neon in the cloud (`@neondatabase/serverless`), plain Postgres via `pg` in Docker; the driver is picked from `DATABASE_URL` |
 | UI | Tailwind CSS v4, `react-markdown`, IBM Plex + Source Serif 4 |
+| Packaging | Multi-stage Docker build (Next.js `standalone` output, non-root user), Docker Compose |
 | Quality | Vitest, ESLint, GitHub Actions |
 
 ## Getting started
@@ -68,6 +69,26 @@ Scripts: `npm test`, `npm run lint`, `npm run typecheck`, `npm run build`.
 
 Free quotas are small, differ per model and change often. For example, `gemini-3.6-flash` allowed only **20 requests per day** per project when tested, and older models such as `gemini-2.5-flash` have been retired (`404`). That is why the app has a fallback model (`GEMINI_FALLBACK_MODEL`) and why `check:gemini` reports each model separately. Check your real limits in [AI Studio](https://aistudio.google.com).
 
+## Run with Docker
+
+The quickest way to try it: one command, no Neon account, no database setup.
+
+```bash
+echo "GEMINI_API_KEY=your-key" > .env
+docker compose up --build
+```
+
+Open [http://localhost:3000](http://localhost:3000). Compose starts two containers:
+
+| Service | Image | Notes |
+|---|---|---|
+| `db` | `pgvector/pgvector:pg17` | Schema is applied on first start from [`db/schema.sql`](db/schema.sql); data lives in the `pgdata` volume; not exposed to the host |
+| `app` | built from [`Dockerfile`](Dockerfile) | Waits for the database health check, runs as a non-root user, ~300 MB |
+
+The Dockerfile has three stages (install, build, runtime). Only the `.next/standalone` output is copied into the final image, so it ships without `devDependencies` or sources. `.env*` files are excluded from the build context, so no secret ends up in an image layer.
+
+Optional variables in `.env`: `PORT` (host port, default `3000`), `POSTGRES_PASSWORD`, and the model overrides listed in `.env.example`. Reset everything with `docker compose down -v`.
+
 ## Design decisions
 
 - **Per-visitor isolation without accounts.** An anonymous `httpOnly` session cookie scopes every document and chunk, so visitors of a public demo never see each other's files.
@@ -85,9 +106,12 @@ Free quotas are small, differ per model and change often. For example, `gemini-3
 2. Add `GEMINI_API_KEY` and `DATABASE_URL` as environment variables.
 3. Run `npm run db:setup` once against the production database.
 
+Any host that runs containers (Fly.io, Railway, a VPS) can use the Docker image instead; set `DATABASE_URL` to a Postgres with pgvector and `GEMINI_API_KEY`.
+
 ## Roadmap
 
 - [ ] Rate limiting per IP (Upstash Redis)
+- [ ] Publish the image to GitHub Container Registry on release
 - [ ] Hybrid search (BM25 + vectors) and re-ranking
 - [ ] OCR for scanned PDFs
 - [ ] Persist chat history per session

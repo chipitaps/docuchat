@@ -22,3 +22,13 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+  docker:
+    runs-on: ubuntu-latest
+    env:
+      GEMINI_API_KEY: ci-placeholder
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose up -d --build --wait
+      - run: curl --fail --silent http://localhost:3000/api/documents
+      - run: docker compose down -v

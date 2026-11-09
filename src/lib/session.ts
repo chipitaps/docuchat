@@ -13,7 +13,7 @@ export async function getSessionId(): Promise<string> {
   store.set(COOKIE, id, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.NODE_ENV === "production" && process.env.COOKIE_SECURE !== "false",
     path: "/",
     maxAge: 60 * 60 * 24 * 7,
   });
